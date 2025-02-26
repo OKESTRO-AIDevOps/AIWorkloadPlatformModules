@@ -19,75 +19,99 @@ import (
 var db *sql.DB
 var BASE_URL = "http://" + os.Getenv("KWARE_IP") + ":" + os.Getenv("KWARE_PORT") + os.Getenv("KWARE_PATH")
 
-func main() {
-	r := gin.Default()
-	r.GET("/workloadinfo", handleGetWorkloadinfoRequest)
-	r.GET("/strato", handleGetStratoRequest)
-	r.POST("/submit", handleSubmitRequest)
-	r.Run()
-}
+// [main, handleGetWorkloadinfoRequest, handleGetStratoRequest, handleSubmitRequest 유지]
 
-// [기존 handleGetWorkloadinfoRequest, handleGetStratoRequest 유지]
-
-func handleSubmitRequest(c *gin.Context) {
-	var requestData ys.RequestData
-
-	if err := c.ShouldBindJSON(&requestData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if requestData.Timestamp == "" {
-		loc, err := time.LoadLocation("Asia/Seoul")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load location"})
-			return
-		}
-		requestData.Timestamp = time.Now().In(loc).Format("2006-01-02 15:04:05")
-	}
-
-	metadataJSON, err := json.Marshal(requestData.Metadata)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to serialize metadata"})
-		return
-	}
-
-	allocInfo := ys.ResourceAllocInfo{
-		Addr:        BASE_URL,
-		EncodedYaml: requestData.Yaml,
-	}
-	ackBody := ReqResourceAllocInfo(allocInfo)
-
-	finalYaml, clusterValue := MadeFinalWorkloadYAML(ackBody, requestData.Yaml)
-	finalYamlYAML, err := yaml.Marshal(finalYaml)
-	if err != nil {
-		log.Fatalf("Error marshaling final YAML: %v", err)
-	}
-	finalYamlBase64 := base64.StdEncoding.EncodeToString(finalYamlYAML)
-
-	err = sendPostRequest(clusterValue, finalYamlBase64, false)
-	if err != nil {
-		log.Printf("%v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send POST request"})
-		return
-	}
-
-	_, err = db.Exec("INSERT INTO workload_info (workload_name, yaml, metadata, created_timestamp) VALUES (?, ?, ?, ?)",
-		requestData.Metadata["name"], finalYamlBase64, string(metadataJSON), requestData.Timestamp)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
-}
-
-// Stub functions (다음 커밋에서 구현)
 func ReqResourceAllocInfo(allocInfo ys.ResourceAllocInfo) ys.RespResource {
-	return ys.RespResource{} // 임시 반환
+	data, err := base64.StdEncoding.DecodeString(allocInfo.EncodedYaml)
+	if err != nil {
+		log.Printf("Failed to decode base64 data: %s", err)
+		return ys.RespResource{}
+	}
+
+	var workflow ys.Workflow
+	err = yaml.Unmarshal(data, &workflow)
+	if err != nil {
+		log.Printf("Failed to unmarshal YAML data: %s", err)
+		return ys.RespResource{}
+	}
+
+	reqJson := ys.ReqResource{}
+	uuid := "dmkim"
+	currentTime := time.Now()
+	nowTime := currentTime.Format("2006-01-02 15:04:05")
+
+	reqJson.Version = "0.12"
+	reqJson.Request.Name = workflow.Metadata.GenerateName
+	reqJson.Request.ID = uuid
+	reqJson.Request.Date = nowTime
+
+	for _, value := range workflow.Spec.Templates {
+		if value.Container != nil {
+			tmpContainer := ys.Container{
+				Name: value.Name,
+				Resources: ys.Resources{
+					Requests: ys.ResourceDetails{
+						CPU:    value.Container.Resources.Requests.CPU,
+						GPU:    value.Container.Resources.Requests.GPU,
+						Memory: value.Container.Resources.Requests.Memory,
+					},
+					Limits: ys.ResourceDetails{
+						GPU:    value.Container.Resources.Limits.NvidiaGPU,
+						CPU:    value.Container.Resources.Limits.CPU,
+						Memory: value.Container.Resources.Limits.Memory,
+					},
+				},
+			}
+			reqJson.Request.Containers = append(reqJson.Request.Containers, tmpContainer)
+		}
+	}
+
+	var ackBody ys.RespResource
+	ack, body := SEND_REST_DATA(allocInfo.Addr, reqJson)
+	if ack.StatusCode == http.StatusOK {
+		err = json.Unmarshal([]byte(body), &ackBody)
+		if err != nil {
+			log.Printf("Failed to unmarshal ack body: %s", err)
+		}
+	}
+	return ackBody
 }
 
 func MadeFinalWorkloadYAML(argBody ys.RespResource, inputYaml string) (map[string]interface{}, string) {
-	return nil, "1" // 임시 반환
+	clusterValue := argBody.Response.Cluster
+	yamlFile, err := base64.StdEncoding.DecodeString(inputYaml)
+	if err != nil {
+		log.Fatalf("Error decoding Base64 YAML data: %v", err)
+	}
+
+	var data map[string]interface{}
+	err = yaml.Unmarshal(yamlFile, &data)
+	if err != nil {
+		log.Fatalf("Error unmarshalling YAML data: %v", err)
+	}
+
+	spec, ok := data["spec"].(map[interface{}]interface{})
+	if ok {
+		templates, ok := spec["templates"].([]interface{})
+		if ok {
+			for _, template := range templates {
+				templateMap, ok := template.(map[interface{}]interface{})
+				if ok {
+					for _, val := range argBody.Response.Containers {
+						if templateMap["name"] == val.Name {
+							templateMap["nodeSelector"] = ys.NodeSelect{Node: val.Node}
+						}
+					}
+				}
+			}
+		}
+	}
+	return data, clusterValue
+}
+
+// Stub functions
+func SEND_REST_DATA(addr string, reqJson ys.ReqResource) (*http.Response, string) {
+	return nil, "" // 임시 반환
 }
 
 func sendPostRequest(clusterValue string, finalYamlBase64 string, retryValue bool) error {
