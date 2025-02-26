@@ -47,3 +47,15 @@ func setupCORS() gin.HandlerFunc {
 		AllowCredentials: true, // 쿠키 허용 여부
 	})
 }
+
+// 라우트 등록 함수
+func registerRoutes(r *gin.Engine) {
+	// 기본 엔드포인트
+	r.GET("/workload_info", handleGetWorkloadinfoRequest)
+	r.GET("/strato", handleGetStratoRequest)
+	r.POST("/submit", handleSubmitRequest)
+	r.POST("/submit_resource", handleSubmitResourceRequest)
+
+	// History 관련 라우트 등록
+	RegisterHistoryRoutes(r)
+}
