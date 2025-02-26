@@ -47,4 +47,15 @@ func MakeYamlFile(argData interface{}, argPath string) {
 		return
 	}
 	defer file.Close()
+
+	// YAML로 직렬화 (serialize)하고 파일에 저장
+	encoder := yaml.NewEncoder(file)
+
+	// encoder.SetIndent(2) // YAML 파일의 가독성을 위해 인덴트를 설정합니다.
+	err = encoder.Encode(argData)
+	if err != nil {
+		log.Fatalf("Error encoding YAML to file: %v", err)
+	}
+
+	fmt.Println("YAML file created successfully.")
 }
