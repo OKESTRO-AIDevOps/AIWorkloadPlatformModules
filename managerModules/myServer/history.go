@@ -45,3 +45,22 @@ func handleGetWorkloadHistoryData(c *gin.Context) {
 	// 기본 쿼리 시작
 	query := "SELECT workload_name, yaml, metadata, created_timestamp FROM workload_info WHERE 1=1"
 	countQuery := "SELECT COUNT(*) FROM workload_info WHERE 1=1"
+
+	// "workload_name" 필터링 (대소문자 구분 없이 부분 일치)
+	var conditions []string
+	var args []interface{}
+
+	if name != "" {
+		conditions = append(conditions, "LOWER(workload_name) LIKE LOWER(?)")
+		args = append(args, "%"+name+"%")
+	}
+
+	// 날짜 필터링 (시작 날짜 및 종료 날짜)
+	if startDate != "" {
+		conditions = append(conditions, "DATE(created_timestamp) >= ?")
+		args = append(args, startDate)
+	}
+	if endDate != "" {
+		conditions = append(conditions, "DATE(created_timestamp) <= ?")
+		args = append(args, endDate)
+	}
