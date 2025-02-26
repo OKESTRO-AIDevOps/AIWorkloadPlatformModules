@@ -97,3 +97,37 @@ func handleGetWorkloadHistoryData(c *gin.Context) {
 	defer rows.Close()
 
 	var results []map[string]interface{}
+
+	// 쿼리 결과 처리
+	index := offset + 1 // Index는 현재 페이지의 첫 항목부터 시작
+	for rows.Next() {
+		var workloadName, yaml, metadata, createdTimestamp string
+		if err := rows.Scan(&workloadName, &yaml, &metadata, &createdTimestamp); err != nil {
+			log.Println("Error scanning row:", err)
+			continue
+		}
+
+		// YAML 내용 생략 처리 (최대 20자)
+		if len(yaml) > 20 {
+			yaml = fmt.Sprintf("%s...", yaml[:20])
+		}
+
+		// 결과 저장
+		results = append(results, map[string]interface{}{
+			"index":            index,
+			"workload_name":    workloadName,
+			"yaml":             yaml,
+			"metadata":         metadata,
+			"created_timestamp": createdTimestamp,
+		})
+		index++
+	}
+
+	// 결과 반환
+	c.JSON(200, gin.H{
+		"total_count": totalCount,     // 총 항목 수
+		"current_page": pageInt,      // 현재 페이지 번호
+		"total_pages": (totalCount + limitInt - 1) / limitInt, // 총 페이지 수
+		"results":     results,       // 검색 결과
+	})
+}
