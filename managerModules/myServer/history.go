@@ -64,3 +64,36 @@ func handleGetWorkloadHistoryData(c *gin.Context) {
 		conditions = append(conditions, "DATE(created_timestamp) <= ?")
 		args = append(args, endDate)
 	}
+
+		// 조건 추가
+	if len(conditions) > 0 {
+		query += " AND " + strings.Join(conditions, " AND ")
+		countQuery += " AND " + strings.Join(conditions, " AND ")
+	}
+
+	// 최신 항목을 먼저 표시하려면 created_timestamp 기준으로 내림차순 정렬 추가
+	query += " ORDER BY created_timestamp DESC"
+
+	// LIMIT과 OFFSET을 쿼리에 추가
+	query += " LIMIT ? OFFSET ?"
+	args = append(args, limitInt, offset)
+
+	// 총 항목 수 조회
+	var totalCount int
+	err = db.QueryRow(countQuery, args[:len(args)-2]...).Scan(&totalCount) // LIMIT과 OFFSET 제외
+	if err != nil {
+		log.Println("Error counting rows:", err)
+		c.JSON(500, gin.H{"error": "Failed to count rows"})
+		return
+	}
+
+	// 데이터베이스 쿼리 실행
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		log.Println("Error executing query:", err)
+		c.JSON(500, gin.H{"error": "Database query failed"})
+		return
+	}
+	defer rows.Close()
+
+	var results []map[string]interface{}
