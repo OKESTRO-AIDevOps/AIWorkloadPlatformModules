@@ -26,5 +26,12 @@ def gpu_stress_test_func():
     gpu_stress_.run_process(int(parameter_dict['duration'][0]))
     return "GPU Stress Test Completed", 200
 
+#Ex.) http://10.0.2.193:5000/memoryStress?duration=5&mem_amount=600
+@app.route('/memory_stress')
+def memory_stress_test_func():
+    parameter_dict = request.args.to_dict(flat=False)
+    memory_stress_.run_process(int(parameter_dict['duration'][0]), int(parameter_dict['mem_amount'][0]))
+    return "Memory Stress Test Completed", 200
+
 if __name__ == '__main__':
    app.run('0.0.0.0',port=5000,debug=True)
