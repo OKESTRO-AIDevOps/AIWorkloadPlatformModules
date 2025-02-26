@@ -20,6 +20,13 @@ type Attributes struct {
 	Order                  int `json:"order,omitempty" yaml:"order,omitempty"`
 }
 
+type Attributes struct {
+	MaxReplicas            int `json:"maxReplicas,omitempty" yaml:"maxReplicas,omitempty"`
+	TotalSize              int `json:"totalSize,omitempty" yaml:"totalSize,omitempty"`
+	PredictedExecutionTime int `json:"predictedExecutionTime,omitempty" yaml:"predictedExecutionTime,omitempty"`
+	Order                  int `json:"order,omitempty" yaml:"order,omitempty"`
+}
+
 type ResourceDetails struct {
 	NvidiaGPU        string `json:"nvidia.com/gpu,omitempty" yaml:"nvidia.com/gpu,omitempty"`
 	CPU              string `json:"cpu,omitempty" yaml:"cpu,omitempty"`
