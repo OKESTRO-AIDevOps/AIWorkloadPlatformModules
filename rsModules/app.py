@@ -33,5 +33,13 @@ def memory_stress_test_func():
     memory_stress_.run_process(int(parameter_dict['duration'][0]), int(parameter_dict['mem_amount'][0]))
     return "Memory Stress Test Completed", 200
 
+#Ex.) http://10.0.2.193:5000/networkStress?duration=5&mode=preprocess&net_url=localhost&net_port=5000&network_mode=prep
+@app.route('/network_stress')
+def network_stress_test_func():
+    parameter_dict = request.args.to_dict(flat=False)
+    network_stress_.run_process(int(parameter_dict['duration'][0]), parameter_dict['net_url'][0], parameter_dict['net_port'][0], parameter_dict['network_mode'][0])
+    return "Network Stress Test Completed", 200
+
+
 if __name__ == '__main__':
    app.run('0.0.0.0',port=5000,debug=True)
