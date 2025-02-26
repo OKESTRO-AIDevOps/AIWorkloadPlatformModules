@@ -37,3 +37,14 @@ func SEND_REST_DATA(argAddr string, argJsonData interface{}) (*http.Response, st
 
 	return resp, string(body)
 }
+
+func MakeYamlFile(argData interface{}, argPath string) {
+
+	// Write the YAML data to a file
+	file, err := os.Create(argPath)
+	if err != nil {
+		fmt.Printf("Error while creating file: %v\n", err)
+		return
+	}
+	defer file.Close()
+}
