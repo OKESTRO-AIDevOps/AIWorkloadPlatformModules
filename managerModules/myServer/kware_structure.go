@@ -25,3 +25,26 @@ type Attribute struct {
 	Yaml             string      `json:"yaml,omitempty" yaml:"yaml,omitempty"`
 	Dag              interface{} `json:"dag,omitempty" yaml:"dag,omitempty"`
 }
+
+type RespResource struct {
+	Response Response `json:"result,omitempty" yaml:"result,omitempty"`
+}
+
+type Response struct {
+	ID               string      `json:"id,omitempty" yaml:"id,omitempty"`
+	Date             string      `json:"date,omitempty" yaml:"date,omitempty"`
+	Containers       []Container `json:"containers,omitempty" yaml:"containers,omitempty"`
+	Cluster          string      `json:"cluster,omitempty" yaml:"cluster,omitempty"`
+	PriorityClass    string      `json:"priorityClass,omitempty" yaml:"priorityClass,omitempty"`
+	Priority         string      `json:"priority,omitempty" yaml:"priority,omitempty"`
+	PreemptionPolicy string      `json:"preemptionPolicy,omitempty" yaml:"preemptionPolicy,omitempty"`
+}
+
+type Result struct {
+	Cluster          string `json:"cluster,omitempty" yaml:"cluster,omitempty"`
+	Node             string `json:"node,omitempty" yaml:"node,omitempty"`
+	PriorityClass    string `json:"priorityClass,omitempty" yaml:"priorityClass,omitempty"`
+	Priority         string `json:"priority,omitempty" yaml:"priority,omitempty"`
+	PreemptionPolicy string `json:"preemptionPolicy,omitempty" yaml:"preemptionPolicy,omitempty"`
+	ExpStartTime     string `json:"expStartTime,omitempty" yaml:"expStartTime,omitempty"`
+}
