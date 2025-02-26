@@ -18,5 +18,13 @@ def cpu_stress_function():
     # cpu_stress_.cpu_stress_ng_func(parameter_dict.get('cpu_num')[0], int(parameter_dict['duration'][0]), parameter_dict.get('percentage')[0])
     cpu_stress_.run_process(parameter_dict.get('cpu_num')[0], int(parameter_dict['duration'][0]), parameter_dict.get('percentage')[0])
     return "CPU Stress Test Completed", 200
+
+@app.route('/gpu_stress')
+def gpu_stress_test_func():
+    parameter_dict = request.args.to_dict(flat=False)
+    # gpu_stress_.gpu_stress_all(int(parameter_dict['duration'][0]))
+    gpu_stress_.run_process(int(parameter_dict['duration'][0]))
+    return "GPU Stress Test Completed", 200
+
 if __name__ == '__main__':
    app.run('0.0.0.0',port=5000,debug=True)
