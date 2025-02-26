@@ -37,3 +37,13 @@ func initDatabase() {
 		log.Fatal("Database connection failed:", err)
 	}
 }
+
+// CORS 설정 함수
+func setupCORS() gin.HandlerFunc {
+	return cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},                      // 허용할 도메인
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"}, // 허용할 HTTP 메서드
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "*"},
+		AllowCredentials: true, // 쿠키 허용 여부
+	})
+}
