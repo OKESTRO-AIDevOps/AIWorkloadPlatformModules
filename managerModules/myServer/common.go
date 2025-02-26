@@ -19,3 +19,11 @@ type Attributes struct {
 	PredictedExecutionTime int `json:"predictedExecutionTime,omitempty" yaml:"predictedExecutionTime,omitempty"`
 	Order                  int `json:"order,omitempty" yaml:"order,omitempty"`
 }
+
+type ResourceDetails struct {
+	NvidiaGPU        string `json:"nvidia.com/gpu,omitempty" yaml:"nvidia.com/gpu,omitempty"`
+	CPU              string `json:"cpu,omitempty" yaml:"cpu,omitempty"`
+	Memory           string `json:"memory,omitempty" yaml:"memory,omitempty"`
+	GPU              string `json:"gpu,omitempty" yaml:"gpu,omitempty"`
+	EphemeralStorage string `json:"ephemeral-storage,omitempty" yaml:"ephemeral-storage,omitempty"`
+}
