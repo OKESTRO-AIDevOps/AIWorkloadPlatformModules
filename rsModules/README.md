@@ -76,3 +76,32 @@ This project provides a **stress test API** to measure the load and performance 
 - **Arguments**:
   - `cpu_stress`, `gpu_stress`, `memory_stress`, `disk_stress`, `network_stress` (bool): Enable stress testing for each resource.
   - Resource-specific arguments as required.
+
+  ## **Execution Guide**
+
+### **Environment**
+
+- Two directories:
+  1. `new_resource_stress`: Resource stress APIs.
+     - Location: `10.0.1.112:~/new_resource_stress`
+  2. `network_stress_flask`: Network stress external API.
+     - Location: `10.0.2.193:~/network_stress_flask`
+
+### **Steps**
+
+#### 1. **Build Docker Image**
+```bash
+# Navigate to 'new_resource_stress' directory and build Docker image
+docker build -t resource-stress:0.0.3 -f Dockerfile .
+```
+
+#### 2. **Run Resource Stress Container**
+```bash
+docker run -it --rm -p 5000:5000 --gpus all resource-stress:0.0.3
+```
+
+#### 3. **Run Network Stress Flask**
+```bash
+# Navigate to 'network_stress_flask' directory and start Flask app
+python3 app.py --port 5001
+```
