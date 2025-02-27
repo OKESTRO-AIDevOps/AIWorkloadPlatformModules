@@ -59,3 +59,17 @@ def gpu_stress_func(duration: int, device_id: int):
 
     # CUDA Context quit
     cuda.Context.pop()
+    
+def gpu_stress_all(duration: int):
+
+    num_gpus = cuda.Device.count()
+
+    threads = []
+
+    for device_id in range(num_gpus):
+        thread = threading.Thread(target=gpu_stress_func, args=(duration, device_id))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
