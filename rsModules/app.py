@@ -40,6 +40,34 @@ def network_stress_test_func():
     network_stress_.run_process(int(parameter_dict['duration'][0]), parameter_dict['net_url'][0], parameter_dict['net_port'][0], parameter_dict['network_mode'][0])
     return "Network Stress Test Completed", 200
 
+'''
+dictionary examples
+{
+    'cpu_stress': ['True'],
+    'gpu_stress': ['False'],
+    'memory_stress': ['False'],
+    'disk_stress': ['True'],
+    'network_stress': ['True'],
+    'duration': ['5'],
+    'mode': ['preprocess'],
+    'net_url': ['localhost'],
+    'net_port': ['5000'],
+    'network_mode': ['prep'],
+    'cpu_num': ['2'],
+    'mem_amount': ['600'],
+    'size_mb': ['100']
+}
+'''
+@app.route('/aio')
+def all_in_one_stress_test_function():
+    parameter_dict = request.args.to_dict(flat=False)
+    print(parameter_dict)
+    print('type of: ', type(parameter_dict.get('duration')))
+    all_in_one_.all_in_one_test_func(
+        parameter_dict
+    )
+
+    return 'all_in_one_stress_test_function'
 
 if __name__ == '__main__':
    app.run('0.0.0.0',port=5000,debug=True)
