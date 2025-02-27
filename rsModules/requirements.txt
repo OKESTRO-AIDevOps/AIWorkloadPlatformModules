@@ -1,0 +1,5 @@
+numpy
+pycuda
+flask
+urllib3
+requests
