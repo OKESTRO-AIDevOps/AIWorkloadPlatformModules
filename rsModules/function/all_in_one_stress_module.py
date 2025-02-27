@@ -73,7 +73,26 @@ def all_in_one_test_func(parameter_dict):
             pass
     else:
         pass
-
+    if 'network_stress' in parameter_dict:
+        if parameter_dict.get('network_stress')[0] == 'True':
+            try:
+                mp_network_stress = Process(
+                target=network_stress_.network_stress_func,
+                args=(
+                    time,
+                    parameter_dict.get('net_url'),
+                    parameter_dict.get('net_port'),
+                    parameter_dict.get('network_mode')
+                    )
+                )
+                mp_list.append(mp_network_stress)
+            except ValueError:
+                print('[Error] Input parameter value error')
+                pass
+        else:
+            pass
+    else:
+        pass
     for mp in mp_list:
         mp.start()
 
