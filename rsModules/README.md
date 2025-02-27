@@ -139,3 +139,35 @@ The following scripts are available to test individual APIs:
     ```bash
     ./all_in_one_stress_curl.sh
     ```
+
+## **Installation Steps**
+
+1. **Clone the Repository**:
+    ```bash
+    git clone https://github.com/ketiops/Hybrid-Cloud.git
+    cd Hybrid-Cloud
+    ```
+
+2. **Build the Docker Image**:
+    ```bash
+    docker build -t resource-stress:0.0.3 -f Dockerfile .
+    ```
+
+3. **Run the API Server**:
+    ```bash
+    docker run -it --rm -p 5000:5000 --gpus all resource-stress:0.0.3
+    ```
+
+4. **Test the APIs Using Curl Scripts**:
+    - Navigate to the script directory and execute the desired script:
+        ```bash
+        ./cpu_stress_curl.sh
+        ./gpu_stress_curl.sh
+        ```
+
+---
+
+## **Contributors**
+
+- **Organization**: KETI
+- **Maintainers**: [KETIOPS Team](https://github.com/ketiops)
