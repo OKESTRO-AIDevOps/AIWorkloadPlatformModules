@@ -105,3 +105,37 @@ docker run -it --rm -p 5000:5000 --gpus all resource-stress:0.0.3
 # Navigate to 'network_stress_flask' directory and start Flask app
 python3 app.py --port 5001
 ```
+
+## **Curl Test Scripts**
+
+The following scripts are available to test individual APIs:
+
+1. **CPU Stress Test**: `cpu_stress_curl.sh`
+    ```bash
+    ./cpu_stress_curl.sh
+    ```
+
+2. **GPU Stress Test**: `gpu_stress_curl.sh`
+    ```bash
+    ./gpu_stress_curl.sh
+    ```
+
+3. **Memory Stress Test**: `memory_stress_curl.sh`
+    ```bash
+    ./memory_stress_curl.sh
+    ```
+
+4. **Disk Stress Test**: `disk_stress_curl.sh`
+    ```bash
+    ./disk_stress_curl.sh
+    ```
+
+5. **Network Stress Test**: `network_stress_curl.sh`
+    ```bash
+    ./network_stress_curl.sh
+    ```
+
+6. **All-in-One Stress Test**: `all_in_one_stress_curl.sh`
+    ```bash
+    ./all_in_one_stress_curl.sh
+    ```
