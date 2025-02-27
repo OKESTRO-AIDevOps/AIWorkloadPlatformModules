@@ -1,3 +1,4 @@
+
 # **ML Workload Resource Stress Test API**
 
 ## **Overview**
@@ -14,6 +15,8 @@ This project provides a **stress test API** to measure the load and performance 
 4. [Execution Guide](#execution-guide)
 5. [Curl Test Scripts](#curl-test-scripts)
 6. [Installation Steps](#installation-steps)
+
+---
 
 ## **Base Code**
 
@@ -37,7 +40,9 @@ This project provides a **stress test API** to measure the load and performance 
 - **All-in-One Stress Test**:
   - Combine multiple resource tests in a single API call.
 
-  ## **API Configuration**
+---
+
+## **API Configuration**
 
 ### **CPU Stress API**
 - **Endpoint**: `/cpu_stress`
@@ -77,7 +82,9 @@ This project provides a **stress test API** to measure the load and performance 
   - `cpu_stress`, `gpu_stress`, `memory_stress`, `disk_stress`, `network_stress` (bool): Enable stress testing for each resource.
   - Resource-specific arguments as required.
 
-  ## **Execution Guide**
+---
+
+## **Execution Guide**
 
 ### **Environment**
 
@@ -105,6 +112,8 @@ docker run -it --rm -p 5000:5000 --gpus all resource-stress:0.0.3
 # Navigate to 'network_stress_flask' directory and start Flask app
 python3 app.py --port 5001
 ```
+
+---
 
 ## **Curl Test Scripts**
 
@@ -139,6 +148,8 @@ The following scripts are available to test individual APIs:
     ```bash
     ./all_in_one_stress_curl.sh
     ```
+
+---
 
 ## **Installation Steps**
 
